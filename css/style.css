@@ -283,19 +283,14 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 .btn-primary:hover { background: var(--c-primary-2); }
 
-/* hero 右侧装饰图（实拍照片） */
+/* hero 右侧装饰图 */
 .hero-art {
   position: absolute;
   right: 4%;
   bottom: 0;
   z-index: 1;
-  opacity: .92;
+  opacity: .9;
   pointer-events: none;
-  width: 420px;
-  height: 340px;
-  border-radius: var(--radius-lg);
-  object-fit: cover;
-  box-shadow: 0 24px 48px rgba(0, 0, 0, .3);
 }
 
 /* 轮播控制 */
