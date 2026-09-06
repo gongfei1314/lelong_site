@@ -318,39 +318,55 @@
         return;
       }
 
-      window._AMapSecurityConfig = { securityJsCode: AMAP_SECURITY_CODE };
-      var s = document.createElement('script');
-      s.src = 'https://webapi.amap.com/maps?v=2.0&key=' + encodeURIComponent(AMAP_KEY);
-      s.onerror = function () { noteText.textContent = '地图脚本加载失败，请检查网络后刷新'; };
-      s.onload = function () {
-        var container = document.getElementById('companyMap');
-        var map = new AMap.Map(container, { zoom: 16, resizeEnable: true });
-        map.on('complete', function () { if (note) note.style.display = 'none'; });
-        map.on('error', function () { noteText.textContent = '地图加载失败：请检查 Key 与安全密钥是否正确'; });
+      function loadMap() {
+        window._AMapSecurityConfig = { securityJsCode: AMAP_SECURITY_CODE };
+        var s = document.createElement('script');
+        s.src = 'https://webapi.amap.com/maps?v=2.0&key=' + encodeURIComponent(AMAP_KEY);
+        s.onerror = function () { noteText.textContent = '地图脚本加载失败，请检查网络后刷新'; };
+        s.onload = function () {
+          var container = document.getElementById('companyMap');
+          var map = new AMap.Map(container, { zoom: 16, resizeEnable: true });
+          map.on('complete', function () { if (note) note.style.display = 'none'; });
+          map.on('error', function () { noteText.textContent = '地图加载失败：请检查 Key 与安全密钥是否正确'; });
 
-        AMap.plugin('AMap.Geocoder', function () {
-          new AMap.Geocoder({ city: '重庆' }).getLocation(COMPANY_ADDRESS, function (status, result) {
-            if (status !== 'complete' || !result.geocodes.length) {
-              noteText.textContent = '地址定位失败：' + COMPANY_ADDRESS;
-              return;
-            }
-            var lnglat = result.geocodes[0].location;
-            var navUrl = 'https://uri.amap.com/marker?position=' + lnglat.getLng() + ',' + lnglat.getLat()
-                       + '&name=' + encodeURIComponent(COMPANY_NAME) + '&src=lerong&callnative=0';
-            map.setCenter(lnglat);
-            map.add(new AMap.Marker({ position: lnglat, title: COMPANY_NAME }));
-            new AMap.InfoWindow({
-              content: '<div style="padding:8px 12px;font-size:13px;line-height:1.8;white-space:nowrap;">'
-                     + '<b style="font-size:14px;">' + COMPANY_NAME + '</b><br>'
-                     + COMPANY_ADDRESS + '<br>'
-                     + '<a href="' + navUrl + '" target="_blank" style="color:#1677ff;">在高德地图中打开 / 导航前往</a>'
-                     + '</div>',
-              offset: new AMap.Pixel(0, -34)
-            }).open(map, lnglat);
+          AMap.plugin('AMap.Geocoder', function () {
+            new AMap.Geocoder({ city: '重庆' }).getLocation(COMPANY_ADDRESS, function (status, result) {
+              if (status !== 'complete' || !result.geocodes.length) {
+                noteText.textContent = '地址定位失败：' + COMPANY_ADDRESS;
+                return;
+              }
+              var lnglat = result.geocodes[0].location;
+              var navUrl = 'https://uri.amap.com/marker?position=' + lnglat.getLng() + ',' + lnglat.getLat()
+                         + '&name=' + encodeURIComponent(COMPANY_NAME) + '&src=lerong&callnative=0';
+              map.setCenter(lnglat);
+              map.add(new AMap.Marker({ position: lnglat, title: COMPANY_NAME }));
+              new AMap.InfoWindow({
+                content: '<div style="padding:8px 12px;font-size:13px;line-height:1.8;white-space:nowrap;">'
+                       + '<b style="font-size:14px;">' + COMPANY_NAME + '</b><br>'
+                       + COMPANY_ADDRESS + '<br>'
+                       + '<a href="' + navUrl + '" target="_blank" style="color:#1677ff;">在高德地图中打开 / 导航前往</a>'
+                       + '</div>',
+                offset: new AMap.Pixel(0, -34)
+              }).open(map, lnglat);
+            });
           });
-        });
-      };
-      document.head.appendChild(s);
+        };
+        document.head.appendChild(s);
+      }
+
+      /* 懒加载：地图滚入视口前 300px 才下载高德 JS 主包（约 1MB），不影响首屏速度 */
+      var box = document.querySelector('.map-box.map-real');
+      if (box && 'IntersectionObserver' in window) {
+        var io = new IntersectionObserver(function (entries) {
+          if (entries.some(function (e) { return e.isIntersecting; })) {
+            io.disconnect();
+            loadMap();
+          }
+        }, { rootMargin: '300px' });
+        io.observe(box);
+      } else {
+        loadMap();
+      }
     })();
   </script>
 </body>
