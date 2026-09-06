@@ -179,6 +179,11 @@
   }
 
   /* ---------------- 8. 留言表单（校验 + FormSubmit 转发到邮箱） ---------------- */
+  /* Server酱微信推送（可选）：在 https://sct.ftqq.com 微信扫码登录后，
+     「Key&二维码」页复制 SendKey 填到下面，并关注「方糖」服务号，
+     提交表单时除邮件外同步推送到微信。保持 HERE_ 前缀则只发邮件。 */
+  var SC_SENDKEY = "SCT413192T6BmijLSHMviFXSDgoOeb17mZ";
+
   var form = d.getElementById("contactForm");
   if (form) {
     form.addEventListener("submit", function (e) {
@@ -201,6 +206,24 @@
       var btn = form.querySelector('button[type="submit"]');
       if (btn) { btn.disabled = true; btn.textContent = "提交中…"; }
 
+      var info =
+        "称呼：" + name + "  \n" +
+        "联系电话：" + phone + "  \n" +
+        "项目类型：" + (form.type.value || "未选择") + "  \n" +
+        "意向产品：" + (form.product.value || "未选择") + "  \n" +
+        "项目描述：" + (form.msg.value.trim() || "无");
+
+      /* Server酱微信推送：与邮件并行发送，失败静默（不影响邮件与页面反馈） */
+      if (SC_SENDKEY.indexOf("HERE_") !== 0) {
+        try {
+          var scBody = new URLSearchParams();
+          scBody.append("title", "【官网咨询】" + name + "（" + phone + "）");
+          scBody.append("desp", info);
+          fetch("https://sctapi.ftqq.com/" + SC_SENDKEY + ".send", { method: "POST", body: scBody })
+            .catch(function () {});
+        } catch (err) { /* 推送失败不影响主流程 */ }
+      }
+
       /* 经 FormSubmit 免费服务转发到公司邮箱（首次使用需在邮箱里点一次激活链接，
          详见 README）。_captcha=false 避免国内无法加载 Google 验证码，
          _honey 蜜罐字段用于拦截机器人。 */
@@ -212,12 +235,7 @@
           _template: "table",
           _captcha: "false",
           _honey: "",
-          message:
-            "称呼：" + name + "\n" +
-            "联系电话：" + phone + "\n" +
-            "项目类型：" + (form.type.value || "未选择") + "\n" +
-            "意向产品：" + (form.product.value || "未选择") + "\n" +
-            "项目描述：" + (form.msg.value.trim() || "无")
+          message: info
         })
       })
         .then(function (res) { return res.json(); })
