@@ -178,7 +178,7 @@
     if (f) applyFilter(f);
   }
 
-  /* ---------------- 8. 留言表单（纯前端校验演示） ---------------- */
+  /* ---------------- 8. 留言表单（校验 + FormSubmit 转发到邮箱） ---------------- */
   var form = d.getElementById("contactForm");
   if (form) {
     form.addEventListener("submit", function (e) {
@@ -198,13 +198,44 @@
         return;
       }
 
-      /* 纯静态站点：此处仅演示提交成功状态。
-         如需真正收集留言，可接入：
-         1. 第三方表单服务（将 form action 指向其提供的地址）
-         2. 或后端接口 /api/message（需另行开发） */
-      okBox.style.display = "block";
-      form.reset();
-      setTimeout(function () { okBox.style.display = "none"; }, 6000);
+      var btn = form.querySelector('button[type="submit"]');
+      if (btn) { btn.disabled = true; btn.textContent = "提交中…"; }
+
+      /* 经 FormSubmit 免费服务转发到公司邮箱（首次使用需在邮箱里点一次激活链接，
+         详见 README）。_captcha=false 避免国内无法加载 Google 验证码，
+         _honey 蜜罐字段用于拦截机器人。 */
+      fetch("https://formsubmit.co/ajax/976310867@qq.com", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({
+          _subject: "【官网咨询】" + name + "（" + phone + "）",
+          _template: "table",
+          _captcha: "false",
+          _honey: "",
+          message:
+            "称呼：" + name + "\n" +
+            "联系电话：" + phone + "\n" +
+            "项目类型：" + (form.type.value || "未选择") + "\n" +
+            "意向产品：" + (form.product.value || "未选择") + "\n" +
+            "项目描述：" + (form.msg.value.trim() || "无")
+        })
+      })
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+          if (data && String(data.success) === "true") {
+            okBox.style.display = "block";
+            form.reset();
+            setTimeout(function () { okBox.style.display = "none"; }, 6000);
+          } else {
+            throw new Error(data && data.message ? data.message : "failed");
+          }
+        })
+        .catch(function () {
+          alert("提交暂时失败，请直接来电 18723377259，或发邮件至 976310867@qq.com，感谢您的信任！");
+        })
+        .then(function () {
+          if (btn) { btn.disabled = false; btn.textContent = "提交咨询"; }
+        });
     });
   }
 })();
