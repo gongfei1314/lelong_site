@@ -103,7 +103,7 @@
               </div>
               <div>
                 <b>电子邮箱</b>
-                <span>service@leirongjc.cn<br>quote@leirongjc.cn（报价专用）</span>
+                <span>976310867@qq.com</span>
               </div>
             </li>
             <li>
@@ -112,7 +112,7 @@
               </div>
               <div>
                 <b>公司地址</b>
-                <span>某某市某某区某某路88号建材产业园6栋<br>（来访请提前电话预约）</span>
+                <span>重庆市巴南区盛龙路1129号<br>（来访请提前电话预约）</span>
               </div>
             </li>
             <li>
@@ -177,11 +177,14 @@
         </div>
       </div>
 
-      <!-- 地图占位 -->
-      <div class="map-box reveal">
-        <svg class="pin" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-        <b style="color:var(--c-primary);font-size:16px">公司位置示意图</b>
-        <span style="font-size:13px">某某市某某区某某路88号建材产业园6栋（上线时可替换为地图组件）</span>
+      <!-- 公司位置地图（高德 JS API，Key 配置见页面底部脚本） -->
+      <div class="map-box map-real reveal">
+        <div id="companyMap"></div>
+        <div class="map-note" id="mapNote">
+          <svg class="pin" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <b style="color:var(--c-primary);font-size:16px">重庆市巴南区盛龙路1129号</b>
+          <span style="font-size:13px" id="mapNoteText">地图加载中…</span>
+        </div>
       </div>
     </div>
   </section>
@@ -262,11 +265,11 @@
             </li>
             <li>
               <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M22 6l-10 7L2 6"/></svg>
-              <span>service@leirongjc.cn</span>
+              <span>976310867@qq.com</span>
             </li>
             <li>
               <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-              <span>某某市某某区某某路88号建材产业园6栋</span>
+              <span>重庆市巴南区盛龙路1129号</span>
             </li>
             <li>
               <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
@@ -296,5 +299,59 @@
   </div>
 
   <script src="js/main.js"></script>
+
+  <!-- ===== 高德地图（Key 已配置；如需更换账号，改下面两个值即可） ===== -->
+  <script>
+    var AMAP_KEY = 'd7dbe5ebcf72ab8192a58af25fb1d37b';
+    var AMAP_SECURITY_CODE = '88e553d32b3e9a4fbaa074926f4ef034';
+    var COMPANY_NAME = '重庆乐融建材有限公司';
+    var COMPANY_ADDRESS = '重庆市巴南区盛龙路1129号';
+
+    (function () {
+      var note = document.getElementById('mapNote');
+      var noteText = document.getElementById('mapNoteText');
+      if (!noteText) return;
+
+      /* 未配置 Key 时保留占位样式，页面其余功能不受影响 */
+      if (AMAP_KEY.indexOf('HERE_') === 0) {
+        noteText.textContent = '（地图组件已就绪，尚未配置高德 Key，配置方法见 README）';
+        return;
+      }
+
+      window._AMapSecurityConfig = { securityJsCode: AMAP_SECURITY_CODE };
+      var s = document.createElement('script');
+      s.src = 'https://webapi.amap.com/maps?v=2.0&key=' + encodeURIComponent(AMAP_KEY);
+      s.onerror = function () { noteText.textContent = '地图脚本加载失败，请检查网络后刷新'; };
+      s.onload = function () {
+        var container = document.getElementById('companyMap');
+        var map = new AMap.Map(container, { zoom: 16, resizeEnable: true });
+        map.on('complete', function () { if (note) note.style.display = 'none'; });
+        map.on('error', function () { noteText.textContent = '地图加载失败：请检查 Key 与安全密钥是否正确'; });
+
+        AMap.plugin('AMap.Geocoder', function () {
+          new AMap.Geocoder({ city: '重庆' }).getLocation(COMPANY_ADDRESS, function (status, result) {
+            if (status !== 'complete' || !result.geocodes.length) {
+              noteText.textContent = '地址定位失败：' + COMPANY_ADDRESS;
+              return;
+            }
+            var lnglat = result.geocodes[0].location;
+            var navUrl = 'https://uri.amap.com/marker?position=' + lnglat.getLng() + ',' + lnglat.getLat()
+                       + '&name=' + encodeURIComponent(COMPANY_NAME) + '&src=lerong&callnative=0';
+            map.setCenter(lnglat);
+            map.add(new AMap.Marker({ position: lnglat, title: COMPANY_NAME }));
+            new AMap.InfoWindow({
+              content: '<div style="padding:8px 12px;font-size:13px;line-height:1.8;white-space:nowrap;">'
+                     + '<b style="font-size:14px;">' + COMPANY_NAME + '</b><br>'
+                     + COMPANY_ADDRESS + '<br>'
+                     + '<a href="' + navUrl + '" target="_blank" style="color:#1677ff;">在高德地图中打开 / 导航前往</a>'
+                     + '</div>',
+              offset: new AMap.Pixel(0, -34)
+            }).open(map, lnglat);
+          });
+        });
+      };
+      document.head.appendChild(s);
+    })();
+  </script>
 </body>
 </html>

@@ -880,6 +880,10 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 .map-box .pin { color: var(--c-accent); }
 
+/* ---------------- 高德地图容器 ---------------- */
+.map-box.map-real { position: relative; overflow: hidden; padding: 0; }
+.map-box.map-real #companyMap { position: absolute; inset: 0; }
+
 /* ---------------- 产品详情区块 ---------------- */
 .product-detail {
   display: grid;
