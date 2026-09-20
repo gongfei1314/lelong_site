@@ -26,9 +26,15 @@
   </url>
   <url>
     <loc>https://www.lerongjc.com/news.html</loc>
-    <lastmod>2026-09-13</lastmod>
+    <lastmod>2026-09-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.lerongjc.com/news/jiaqizhuan-shigong.html</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.lerongjc.com/news/jiaqizhuan-jiage.html</loc>

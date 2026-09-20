@@ -1187,7 +1187,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     transition: max-height .35s ease;
     gap: 0;
   }
-  .nav.open { max-height: 480px; }
+  .nav.open { max-height: 640px; }
   .nav > li > a { line-height: 1; padding: 14px 28px; }
   .nav > li > a::after { display: none; }
   .nav .dropdown {

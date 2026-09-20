@@ -29,8 +29,9 @@
       navToggle.classList.toggle("open", open);
       navToggle.setAttribute("aria-label", open ? "关闭菜单" : "打开菜单");
     });
-    // 点击链接后收起菜单
+    // 点击链接后收起菜单（子菜单首次展开时已 preventDefault，跳过收起）
     mainNav.addEventListener("click", function (e) {
+      if (e.defaultPrevented) return;
       if (e.target.closest("a") && window.innerWidth <= 768) {
         mainNav.classList.remove("open");
         navToggle.classList.remove("open");
