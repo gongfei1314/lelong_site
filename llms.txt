@@ -7,8 +7,8 @@
 - 首页（公司与服务总览）: https://www.lerongjc.com/
 - 产品中心（加气砖隔墙 / ALC 板材隔墙 / 轻质复合板隔墙 / 辅材规格参数）: https://www.lerongjc.com/products.html
 - 工程案例（工业厂房 / 公共建筑 / 住宅 / 酒店办公）: https://www.lerongjc.com/cases.html
-- 关于我们（公司简介 / 理念 / 历程 / 资质）: https://www.lerongjc.com/about.html
-- 新闻资讯（隔墙行业动态与知识科普）: https://www.lerongjc.com/news.html
+- 关于我们（公司简介 / 理念 / 历程 / 证照与检测）: https://www.lerongjc.com/about.html
+- 隔墙知识（施工工艺 / 价格 / 选材 / 防火科普）: https://www.lerongjc.com/news.html
 - 联系我们（电话 / 邮箱 / 地址 / 地图 / 留言）: https://www.lerongjc.com/contact.html
 
 ## 联系方式

@@ -180,10 +180,6 @@
   }
 
   /* ---------------- 8. 留言表单（校验 + FormSubmit 转发到邮箱） ---------------- */
-  /* Server酱微信推送（可选）：在 https://sct.ftqq.com 微信扫码登录后，
-     「Key&二维码」页复制 SendKey 填到下面，并关注「方糖」服务号，
-     提交表单时除邮件外同步推送到微信。保持 HERE_ 前缀则只发邮件。 */
-  var SC_SENDKEY = "SCT413192T6BmijLSHMviFXSDgoOeb17mZ";
 
   var form = d.getElementById("contactForm");
   if (form) {
