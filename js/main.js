@@ -210,20 +210,8 @@
         "意向产品：" + (form.product.value || "未选择") + "  \n" +
         "项目描述：" + (form.msg.value.trim() || "无");
 
-      /* Server酱微信推送：与邮件并行发送，失败静默（不影响邮件与页面反馈） */
-      if (SC_SENDKEY.indexOf("HERE_") !== 0) {
-        try {
-          var scBody = new URLSearchParams();
-          scBody.append("title", "【官网咨询】" + name + "（" + phone + "）");
-          scBody.append("desp", info);
-          fetch("https://sctapi.ftqq.com/" + SC_SENDKEY + ".send", { method: "POST", body: scBody })
-            .catch(function () {});
-        } catch (err) { /* 推送失败不影响主流程 */ }
-      }
-
       /* 经 FormSubmit 免费服务转发到公司邮箱（首次使用需在邮箱里点一次激活链接，
-         详见 README）。_captcha=false 避免国内无法加载 Google 验证码，
-         _honey 蜜罐字段用于拦截机器人。 */
+         详见 README）。 */
       fetch("https://formsubmit.co/ajax/976310867@qq.com", {
         method: "POST",
         headers: { "Content-Type": "application/json", "Accept": "application/json" },
