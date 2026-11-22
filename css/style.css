@@ -1187,7 +1187,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     transition: max-height .35s ease;
     gap: 0;
   }
-  .nav.open { max-height: 640px; }
+  .nav.open { max-height: 900px; }
   .nav > li > a { line-height: 1; padding: 14px 28px; }
   .nav > li > a::after { display: none; }
   .nav .dropdown {
@@ -1201,6 +1201,44 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   .nav > li:hover .dropdown,
   .nav > li.expand .dropdown { display: block; }
   .nav .dropdown a { padding-left: 46px; }
+  /* 有子菜单的父项：右侧展开箭头（移动端提示可点击展开） */
+  .nav > li:has(.dropdown) > a {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .nav > li:has(.dropdown) > a::after {
+    display: block;
+    content: "▾";
+    width: auto; height: auto;
+    background: none;
+    position: static;
+    transform: none;
+    border-radius: 0;
+    font-size: 15px;
+    color: var(--c-text-light);
+    transition: transform .25s, color .25s;
+  }
+  .nav > li.expand:has(.dropdown) > a::after {
+    transform: rotate(180deg);
+    color: var(--c-accent);
+  }
+  /* 子菜单显式配色保险：深色文字 + 浅灰蓝底，杜绝白字白底不可见 */
+  .nav .dropdown {
+    background: var(--c-bg-soft);
+  }
+  .nav .dropdown a {
+    color: var(--c-text);
+    font-size: 15px;
+    padding-top: 11px;
+    padding-bottom: 11px;
+    border-left: 3px solid var(--c-line);
+  }
+  .nav .dropdown a:active,
+  .nav .dropdown a:hover {
+    color: var(--c-primary);
+    background: #e8eff4;
+  }
 
   .hero { height: 480px; }
   .hero h1 { font-size: 30px; }

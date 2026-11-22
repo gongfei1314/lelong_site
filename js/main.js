@@ -24,10 +24,16 @@
   var navToggle = d.getElementById("navToggle");
   var mainNav = d.getElementById("mainNav");
   if (navToggle && mainNav) {
+    function collapseSub() {
+      mainNav.querySelectorAll("li.expand").forEach(function (o) {
+        o.classList.remove("expand");
+      });
+    }
     navToggle.addEventListener("click", function () {
       var open = mainNav.classList.toggle("open");
       navToggle.classList.toggle("open", open);
       navToggle.setAttribute("aria-label", open ? "关闭菜单" : "打开菜单");
+      if (!open) collapseSub();
     });
     // 点击链接后收起菜单（子菜单首次展开时已 preventDefault，跳过收起）
     mainNav.addEventListener("click", function (e) {
@@ -44,9 +50,12 @@
       if (drop && link) {
         link.addEventListener("click", function (e) {
           if (window.innerWidth <= 768) {
-            // 若点击的是当前链接本身的跳转目标则放行；展开逻辑：首次点击展开
+            // 首次点击展开子菜单（手风琴：同时收起其它项）；再次点击跳转父栏目页
             if (!li.classList.contains("expand")) {
               e.preventDefault();
+              mainNav.querySelectorAll("li.expand").forEach(function (o) {
+                if (o !== li) o.classList.remove("expand");
+              });
               li.classList.add("expand");
             }
           }
